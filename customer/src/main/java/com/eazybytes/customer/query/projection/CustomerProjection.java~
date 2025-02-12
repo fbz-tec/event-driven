@@ -24,7 +24,6 @@ public class CustomerProjection {
         iCustomerService.updateCustomer(customerUpdatedEvent);
     }
 
-    @EventHandler
     public void on(CustomerDeletedEvent customerDeletedEvent){
         iCustomerService.deleteCustomer(customerDeletedEvent);
     }
