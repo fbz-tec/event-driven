@@ -25,6 +25,6 @@ public class CustomerProjection {
     }
 
     public void on(CustomerDeletedEvent customerDeletedEvent){
-        iCustomerService.deleteCustomer(customerDeletedEvent.getCustomerId());
+        iCustomerService.deleteCustomer(customerDeletedEvent);
     }
 }

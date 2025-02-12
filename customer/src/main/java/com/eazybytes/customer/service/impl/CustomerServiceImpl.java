@@ -1,6 +1,7 @@
 package com.eazybytes.customer.service.impl;
 
 import com.eazybytes.customer.command.event.CustomerCreatedEvent;
+import com.eazybytes.customer.command.event.CustomerDeletedEvent;
 import com.eazybytes.customer.command.event.CustomerUpdatedEvent;
 import com.eazybytes.customer.constants.CustomerConstants;
 import com.eazybytes.customer.dto.CustomerDto;
@@ -54,11 +55,11 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
-    public boolean deleteCustomer(String customerId) {
-        Customer customer = customerRepository.findById(customerId).orElseThrow(
-                () -> new ResourceNotFoundException("Customer", "customerId", customerId)
+    public boolean deleteCustomer(CustomerDeletedEvent event) {
+        Customer customer = customerRepository.findById(event.getCustomerId()).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "customerId", event.getCustomerId())
         );
-        customer.setActiveSw(CustomerConstants.IN_ACTIVE_SW);
+        customer.setActiveSw(event.isActiveSw());
         customerRepository.save(customer);
         return true;
     }

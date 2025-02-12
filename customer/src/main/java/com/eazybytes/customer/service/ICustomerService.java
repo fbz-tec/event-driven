@@ -1,6 +1,7 @@
 package com.eazybytes.customer.service;
 
 import com.eazybytes.customer.command.event.CustomerCreatedEvent;
+import com.eazybytes.customer.command.event.CustomerDeletedEvent;
 import com.eazybytes.customer.command.event.CustomerUpdatedEvent;
 import com.eazybytes.customer.dto.CustomerDto;
 import com.eazybytes.customer.entity.Customer;
@@ -25,8 +26,8 @@ public interface ICustomerService {
     boolean updateCustomer(CustomerUpdatedEvent customerUpdatedEvent);
 
     /**
-     * @param customerId - Input Customer ID
+     * @param customerDeletedEvent - Input customerDeletedEvent Object
      * @return boolean indicating if the delete of Customer details is successful or not
      */
-    boolean deleteCustomer(String customerId);
+    boolean deleteCustomer(CustomerDeletedEvent customerDeletedEvent);
 }
