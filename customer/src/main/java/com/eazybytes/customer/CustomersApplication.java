@@ -2,6 +2,9 @@ package com.eazybytes.customer;
 
 import com.eazybytes.customer.command.interceptor.CustomerCommandInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.config.EventProcessingConfiguration;
+import org.axonframework.config.EventProcessingConfigurer;
+import org.axonframework.eventhandling.PropagatingErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,6 +23,12 @@ public class CustomersApplication {
     public void registerCustomerCommandInterceptor(ApplicationContext context,
                                                    CommandGateway commandGateway){
         commandGateway.registerDispatchInterceptor(context.getBean(CustomerCommandInterceptor.class));
+    }
+
+    @Autowired
+    public void configure(EventProcessingConfigurer configurer){
+        configurer.registerListenerInvocationErrorHandler("customer-group",
+                conf -> PropagatingErrorHandler.instance());
     }
 
 }
