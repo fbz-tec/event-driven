@@ -2,9 +2,9 @@ server:
   port: 8080
 spring:
   application:
-    name: "customer"
+    name: "profile"
   datasource:
-    url: "jdbc:h2:file:~/customer;AUTO_SERVER=true"
+    url: "jdbc:h2:file:~/profile;AUTO_SERVER=true"
     driver-class-name: "org.h2.Driver"
     username: sa
     password: ''
@@ -37,8 +37,8 @@ management:
 
 info:
   app:
-    name: "customer"
-    description: "Eazy Bank Customer Application"
+    name: "profile"
+    description: "Eazy Bank Profile Application"
     version: "1.0.0"
 
 logging:
@@ -46,9 +46,5 @@ logging:
     console: "%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n"
 
 axon:
-  eventhandling:
-    processors:
-      customer-group:
-        mode: subscribing
   axonserver:
     servers: localhost:8124

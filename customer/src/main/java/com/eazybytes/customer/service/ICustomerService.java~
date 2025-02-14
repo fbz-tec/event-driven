@@ -4,6 +4,7 @@ import com.eazybytes.customer.command.event.CustomerCreatedEvent;
 import com.eazybytes.customer.command.event.CustomerDeletedEvent;
 import com.eazybytes.customer.command.event.CustomerUpdatedEvent;
 import com.eazybytes.customer.dto.CustomerDto;
+import com.eazybytes.customer.entity.Customer;
 
 public interface ICustomerService {
 
