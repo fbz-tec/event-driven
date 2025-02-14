@@ -1,14 +1,17 @@
 package com.eazybytes.cards.service;
 
+import com.eazybytes.cards.command.event.CardCreatedEvent;
+import com.eazybytes.cards.command.event.CardDeletedEvent;
+import com.eazybytes.cards.command.event.CardUpdatedEvent;
 import com.eazybytes.cards.dto.CardsDto;
 
 public interface ICardsService {
 
     /**
      *
-     * @param mobileNumber - Mobile Number of the Customer
+     * @param cardCreatedEvent - cardCreatedEvent Object
      */
-    void createCard(String mobileNumber);
+    void createCard(CardCreatedEvent cardCreatedEvent);
 
     /**
      *
@@ -19,16 +22,16 @@ public interface ICardsService {
 
     /**
      *
-     * @param cardsDto - CardsDto Object
+     * @param cardUpdatedEvent - CardUpdatedEvent Object
      * @return boolean indicating if the update of card details is successful or not
      */
-    boolean updateCard(CardsDto cardsDto);
+    boolean updateCard(CardUpdatedEvent cardUpdatedEvent);
 
     /**
      *
-     * @param cardNumber - Input Card Number
+     * @param cardDeletedEvent - CardDeletedEvent Object
      * @return boolean indicating if the delete of card details is successful or not
      */
-    boolean deleteCard(Long cardNumber);
+    boolean deleteCard(CardDeletedEvent cardDeletedEvent);
 
 }

@@ -1,0 +1,4 @@
+package com.eazybytes.cards.command.event;
+
+public class CardUpdatedEvent {
+}
