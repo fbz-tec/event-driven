@@ -1,5 +1,6 @@
 package com.eazybytes.customer.command.aggregate;
 
+import com.eazybytes.common.event.CustomerDataChangedEvent;
 import com.eazybytes.customer.command.CreateCustomerCommand;
 import com.eazybytes.customer.command.DeleteCustomerCommand;
 import com.eazybytes.customer.command.UpdateCustomerCommand;
@@ -27,19 +28,13 @@ public class CustomerAggregate {
     }
 
     @CommandHandler
-    public CustomerAggregate(CreateCustomerCommand createCustomerCommand/*,CustomerRepository customerRepository*/) {
-
-        /* Optional<Customer> optionalCustomer = customerRepository.
-                findByMobileNumberAndActiveSw(createCustomerCommand.getMobileNumber(), true);
-
-        if (optionalCustomer.isPresent()) {
-            throw new CustomerAlreadyExistsException("Customer already registered with given mobileNumber "
-                    + createCustomerCommand.getMobileNumber());
-        }*/
-
+    public CustomerAggregate(CreateCustomerCommand createCustomerCommand) {
         CustomerCreatedEvent customerCreatedEvent = new CustomerCreatedEvent();
+        CustomerDataChangedEvent customerDataChangedEvent = new CustomerDataChangedEvent();
         BeanUtils.copyProperties(createCustomerCommand, customerCreatedEvent);
-        AggregateLifecycle.apply(customerCreatedEvent);
+        BeanUtils.copyProperties(createCustomerCommand, customerDataChangedEvent);
+        AggregateLifecycle.apply(customerCreatedEvent).andThen(() ->
+                AggregateLifecycle.apply(customerDataChangedEvent));
     }
 
     @EventSourcingHandler
@@ -55,8 +50,11 @@ public class CustomerAggregate {
     @CommandHandler
     public void handle(UpdateCustomerCommand updateCustomerCommand){
         CustomerUpdatedEvent customerUpdatedEvent = new CustomerUpdatedEvent();
+        CustomerDataChangedEvent customerDataChangedEvent = new CustomerDataChangedEvent();
         BeanUtils.copyProperties(updateCustomerCommand, customerUpdatedEvent);
+        BeanUtils.copyProperties(updateCustomerCommand, customerDataChangedEvent);
         AggregateLifecycle.apply(customerUpdatedEvent);
+        AggregateLifecycle.apply(customerDataChangedEvent);
     }
 
     @EventSourcingHandler

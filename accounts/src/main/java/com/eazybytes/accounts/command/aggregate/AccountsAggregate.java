@@ -6,6 +6,7 @@ import com.eazybytes.accounts.command.UpdateAccountCommand;
 import com.eazybytes.accounts.command.event.AccountCreatedEvent;
 import com.eazybytes.accounts.command.event.AccountDeletedEvent;
 import com.eazybytes.accounts.command.event.AccountUpdatedEvent;
+import com.eazybytes.common.event.AccountDataChangedEvent;
 import lombok.NoArgsConstructor;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -28,8 +29,11 @@ public class AccountsAggregate {
     @CommandHandler
     public AccountsAggregate(CreateAccountCommand command) {
         AccountCreatedEvent event = new AccountCreatedEvent();
+        AccountDataChangedEvent accountDataChangedEvent = new AccountDataChangedEvent();
         BeanUtils.copyProperties(command, event);
-        AggregateLifecycle.apply(event);
+        BeanUtils.copyProperties(command, accountDataChangedEvent);
+        AggregateLifecycle.apply(event)
+                .andThen(() -> AggregateLifecycle.apply(accountDataChangedEvent));
     }
 
     @EventSourcingHandler
@@ -44,8 +48,11 @@ public class AccountsAggregate {
     @CommandHandler
     public void handle(UpdateAccountCommand command){
         AccountUpdatedEvent event = new AccountUpdatedEvent();
+        AccountDataChangedEvent accountDataChangedEvent = new AccountDataChangedEvent();
         BeanUtils.copyProperties(command, event);
+        BeanUtils.copyProperties(command, accountDataChangedEvent);
         AggregateLifecycle.apply(event);
+        AggregateLifecycle.apply(accountDataChangedEvent);
     }
 
     @EventSourcingHandler

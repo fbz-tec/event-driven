@@ -6,6 +6,7 @@ import com.eazybytes.cards.command.UpdateCardCommand;
 import com.eazybytes.cards.command.event.CardCreatedEvent;
 import com.eazybytes.cards.command.event.CardDeletedEvent;
 import com.eazybytes.cards.command.event.CardUpdatedEvent;
+import com.eazybytes.common.event.CardDataChangedEvent;
 import lombok.NoArgsConstructor;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -13,6 +14,7 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 
 @Aggregate
 @NoArgsConstructor
@@ -30,8 +32,11 @@ public class CardAggregate {
     @CommandHandler
     public CardAggregate(CreateCardCommand command) {
         CardCreatedEvent event = new CardCreatedEvent();
+        CardDataChangedEvent cardDataChangedEvent = new CardDataChangedEvent();
         BeanUtils.copyProperties(command, event);
-        AggregateLifecycle.apply(event);
+        BeanUtils.copyProperties(command, cardDataChangedEvent);
+        AggregateLifecycle.apply(event)
+                .andThen(() ->AggregateLifecycle.apply(cardDataChangedEvent));
     }
 
     @EventSourcingHandler
@@ -48,8 +53,11 @@ public class CardAggregate {
     @CommandHandler
     public void handle(UpdateCardCommand command) {
         CardUpdatedEvent event = new CardUpdatedEvent();
+        CardDataChangedEvent cardDataChangedEvent = new CardDataChangedEvent();
         BeanUtils.copyProperties(command, event);
+        BeanUtils.copyProperties(command, cardDataChangedEvent);
         AggregateLifecycle.apply(event);
+        AggregateLifecycle.apply(cardDataChangedEvent);
     }
 
     @EventSourcingHandler

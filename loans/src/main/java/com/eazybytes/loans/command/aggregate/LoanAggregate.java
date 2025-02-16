@@ -1,5 +1,6 @@
 package com.eazybytes.loans.command.aggregate;
 
+import com.eazybytes.common.event.LoanDataChangedEvent;
 import com.eazybytes.loans.command.CreateLoanCommand;
 import com.eazybytes.loans.command.DeleteLoanCommand;
 import com.eazybytes.loans.command.UpdateLoanCommand;
@@ -36,8 +37,11 @@ public class LoanAggregate {
     @CommandHandler
     public LoanAggregate(CreateLoanCommand createCommand) {
         LoanCreatedEvent loanCreatedEvent = new LoanCreatedEvent();
+        LoanDataChangedEvent loanDataChangedEvent = new LoanDataChangedEvent();
         BeanUtils.copyProperties(createCommand, loanCreatedEvent);
-        AggregateLifecycle.apply(loanCreatedEvent);
+        BeanUtils.copyProperties(createCommand, loanDataChangedEvent);
+        AggregateLifecycle.apply(loanCreatedEvent)
+                .andThen(() ->AggregateLifecycle.apply(loanDataChangedEvent));
     }
 
     @EventSourcingHandler
@@ -55,8 +59,11 @@ public class LoanAggregate {
     @CommandHandler
     public void handle(UpdateLoanCommand updateCommand) {
         LoanUpdatedEvent loanUpdatedEvent = new LoanUpdatedEvent();
+        LoanDataChangedEvent loanDataChangedEvent = new LoanDataChangedEvent();
         BeanUtils.copyProperties(updateCommand, loanUpdatedEvent);
+        BeanUtils.copyProperties(updateCommand, loanDataChangedEvent);
         AggregateLifecycle.apply(loanUpdatedEvent);
+        AggregateLifecycle.apply(loanDataChangedEvent);
     }
 
     @EventSourcingHandler

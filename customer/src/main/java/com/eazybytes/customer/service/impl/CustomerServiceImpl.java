@@ -1,5 +1,6 @@
 package com.eazybytes.customer.service.impl;
 
+import com.eazybytes.common.event.CustomerDataChangedEvent;
 import com.eazybytes.customer.command.event.CustomerCreatedEvent;
 import com.eazybytes.customer.command.event.CustomerDeletedEvent;
 import com.eazybytes.customer.command.event.CustomerUpdatedEvent;
@@ -11,6 +12,7 @@ import com.eazybytes.customer.mapper.CustomerMapper;
 import com.eazybytes.customer.repository.CustomerRepository;
 import com.eazybytes.customer.service.ICustomerService;
 import lombok.AllArgsConstructor;
+import org.axonframework.eventhandling.gateway.EventGateway;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ import java.util.Optional;
 public class CustomerServiceImpl implements ICustomerService {
 
     private CustomerRepository customerRepository;
+    private EventGateway eventGateway;
 
     @Override
     public void createCustomer(CustomerCreatedEvent customerCreatedEvent) {
@@ -60,6 +63,9 @@ public class CustomerServiceImpl implements ICustomerService {
         );
         customer.setActiveSw(event.isActiveSw());
         customerRepository.save(customer);
+        CustomerDataChangedEvent customerDataChangedEvent = new CustomerDataChangedEvent();
+        BeanUtils.copyProperties(customer, customerDataChangedEvent);
+        eventGateway.publish(customerDataChangedEvent);
         return true;
     }
 
