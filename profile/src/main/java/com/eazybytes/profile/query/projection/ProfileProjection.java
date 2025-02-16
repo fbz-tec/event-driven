@@ -1,8 +1,9 @@
 package com.eazybytes.profile.query.projection;
 
-import com.eazybytes.profile.command.event.ProfileCreatedEvent;
-import com.eazybytes.profile.command.event.ProfileDeletedEvent;
-import com.eazybytes.profile.command.event.ProfileUpdatedEvent;
+import com.eazybytes.common.event.AccountDataChangedEvent;
+import com.eazybytes.common.event.CardDataChangedEvent;
+import com.eazybytes.common.event.CustomerDataChangedEvent;
+import com.eazybytes.common.event.LoanDataChangedEvent;
 import com.eazybytes.profile.service.IProfileService;
 import lombok.RequiredArgsConstructor;
 import org.axonframework.config.ProcessingGroup;
@@ -17,17 +18,22 @@ public class ProfileProjection {
     private final IProfileService iProfileService;
 
     @EventHandler
-    public void on(ProfileCreatedEvent profileCreatedEvent) {
-        iProfileService.createProfile(profileCreatedEvent);
+    public void on(CustomerDataChangedEvent event) {
+        iProfileService.handleCustomerDataChangedEvent(event);
     }
 
     @EventHandler
-    public void on(ProfileUpdatedEvent profileUpdatedEvent) {
-        iProfileService.updateProfile(profileUpdatedEvent);
+    public void on(AccountDataChangedEvent event) {
+        iProfileService.handleAccountDataChangedEvent(event);
     }
 
     @EventHandler
-    public void on(ProfileDeletedEvent profileDeletedEvent){
-        iProfileService.deleteProfile(profileDeletedEvent);
+    public void on(CardDataChangedEvent event) {
+        iProfileService.handleCardDataChangedEvent(event);
+    }
+
+    @EventHandler
+    public void on(LoanDataChangedEvent event) {
+        iProfileService.handleLoanDataChangedEvent(event);
     }
 }

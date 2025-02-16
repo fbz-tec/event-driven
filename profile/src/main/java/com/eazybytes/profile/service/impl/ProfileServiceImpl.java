@@ -1,5 +1,10 @@
 package com.eazybytes.profile.service.impl;
 
+import com.eazybytes.common.event.AccountDataChangedEvent;
+import com.eazybytes.common.event.CardDataChangedEvent;
+import com.eazybytes.common.event.CustomerDataChangedEvent;
+import com.eazybytes.common.event.LoanDataChangedEvent;
+import com.eazybytes.profile.constants.ProfileConstants;
 import com.eazybytes.profile.dto.ProfileDto;
 import com.eazybytes.profile.entity.Profile;
 import com.eazybytes.profile.exception.ProfileAlreadyExistsException;
@@ -24,8 +29,50 @@ public class ProfileServiceImpl implements IProfileService {
         Profile profile = profileRepository.findByMobileNumberAndActiveSw(mobileNumber, true).orElseThrow(
                 () -> new ResourceNotFoundException("Profile", "mobileNumber", mobileNumber)
         );
-        ProfileDto profileDto = ProfileMapper.mapToProfileDto(profile, new ProfileDto());
-        return profileDto;
+        return ProfileMapper.mapToProfileDto(profile, new ProfileDto());
+    }
+
+    @Override
+    public void handleCustomerDataChangedEvent(CustomerDataChangedEvent customerDataChangedEvent) {
+        Optional<Profile> optionalProfile = profileRepository.findByMobileNumberAndActiveSw(customerDataChangedEvent.getMobileNumber(),
+                ProfileConstants.ACTIVE_SW);
+        if (optionalProfile.isPresent()){
+            throw new ProfileAlreadyExistsException("Profile already registered with given mobileNumber "
+                    +customerDataChangedEvent.getMobileNumber());
+        }
+        Profile profile = new Profile();
+        BeanUtils.copyProperties(customerDataChangedEvent, profile);
+        profileRepository.save(profile);
+    }
+
+    @Override
+    public void handleLoanDataChangedEvent(LoanDataChangedEvent loanDataChangedEvent){
+        Profile profile = profileRepository.findByMobileNumberAndActiveSw(loanDataChangedEvent.getMobileNumber(),
+                ProfileConstants.ACTIVE_SW)
+                .orElseThrow(()-> new ResourceNotFoundException("Profile", "mobileNumber",
+                loanDataChangedEvent.getMobileNumber()));
+        profile.setLoanNumber(loanDataChangedEvent.getLoanNumber());
+        profileRepository.save(profile);
+    }
+
+    @Override
+    public void handleAccountDataChangedEvent(AccountDataChangedEvent accountDataChangedEvent){
+        Profile profile = profileRepository.findByMobileNumberAndActiveSw(accountDataChangedEvent.getMobileNumber(),
+                        ProfileConstants.ACTIVE_SW)
+                .orElseThrow(()-> new ResourceNotFoundException("Profile", "mobileNumber",
+                        accountDataChangedEvent.getMobileNumber()));
+        profile.setAccountNumber(accountDataChangedEvent.getAccountNumber());
+        profileRepository.save(profile);
+    }
+
+    @Override
+    public void handleCardDataChangedEvent(CardDataChangedEvent cardDataChangedEvent){
+        Profile profile = profileRepository.findByMobileNumberAndActiveSw(cardDataChangedEvent.getMobileNumber(),
+                        ProfileConstants.ACTIVE_SW)
+                .orElseThrow(()-> new ResourceNotFoundException("Profile", "mobileNumber",
+                        cardDataChangedEvent.getMobileNumber()));
+        profile.setCardNumber(cardDataChangedEvent.getCardNumber());
+        profileRepository.save(profile);
     }
 
 }

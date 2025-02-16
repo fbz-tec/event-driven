@@ -10,7 +10,6 @@ import java.util.Optional;
 public interface ProfileRepository extends JpaRepository<Profile, String> {
 
     Optional<Profile> findByMobileNumberAndActiveSw(String mobileNumber,boolean active);
-    Optional<Profile> findByProfileIdAndActiveSw(String profileId,boolean active);
 
 
 }

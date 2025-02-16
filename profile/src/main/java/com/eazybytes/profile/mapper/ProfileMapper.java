@@ -6,11 +6,11 @@ import com.eazybytes.profile.entity.Profile;
 public class ProfileMapper {
 
     public static ProfileDto mapToProfileDto(Profile profile, ProfileDto profileDto) {
-        profileDto.setProfileId(profile.getProfileId());
-        profileDto.setName(profile.getName());
-        profileDto.setEmail(profile.getEmail());
         profileDto.setMobileNumber(profile.getMobileNumber());
-        profileDto.setActiveSw(profile.isActiveSw());
+        profileDto.setName(profile.getName());
+        profileDto.setAccountNumber(profile.getAccountNumber());
+        profileDto.setCardNumber(profile.getCardNumber());
+        profileDto.setLoanNumber(profile.getLoanNumber());
         return profileDto;
     }
 
